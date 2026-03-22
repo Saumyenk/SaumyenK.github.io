@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saumyen Kundu</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #08100d;
+    --surface: #0c1510;
+    --line:    #172318;
+    --accent:  #7ec8a0;
+    --gold:    #b8c97a;
+    --text:    #d8e8dc;
+    --muted:   #5a7a65;
+    --faint:   #101a13;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(126,200,160,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 42% 72%, rgba(126,200,160,0.12) 0%, transparent 100%),
+      radial-gradient(1px 1px at 67% 33%, rgba(184,201,122,0.18) 0%, transparent 100%),
+      radial-gradient(1px 1px at 88% 55%, rgba(126,200,160,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 24% 85%, rgba(184,201,122,0.1) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78%  8%, rgba(126,200,160,0.18) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 95%, rgba(126,200,160,0.08) 0%, transparent 100%),
+      radial-gradient(1px 1px at  3% 60%, rgba(184,201,122,0.12) 0%, transparent 100%);
+    pointer-events: none; z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 300px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(126,200,160,0.05) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .page {
+    position: relative; z-index: 1;
+    max-width: 780px; margin: 0 auto; padding: 0 2rem;
+  }
+
+  /* HEADER */
+  header {
+    padding: 5rem 0 3.5rem;
+    border-bottom: 1px solid var(--line);
+    animation: rise 0.9s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.2rem;
+  }
+  header h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 400;
+    letter-spacing: -0.01em; line-height: 1.05; color: var(--text); margin-bottom: 0.8rem;
+  }
+  header h1 em { font-style: italic; color: var(--accent); }
+  .affil {
+    color: var(--muted); font-size: 0.92rem;
+    font-family: 'JetBrains Mono', monospace; font-weight: 300; margin-bottom: 1.8rem;
+  }
+  .research-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .pill {
+    border: 1px solid var(--line); padding: 0.25rem 0.85rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em;
+    color: var(--muted); border-radius: 1px; transition: color 0.2s, border-color 0.2s;
+  }
+  .pill:hover { color: var(--accent); border-color: var(--accent); }
+  .contact-row { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .contact-row a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .contact-row a:hover { color: var(--gold); }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(8,16,13,0.93); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { max-width: 780px; margin: 0 auto; padding: 0 2rem; display: flex; }
+  .tab-btn {
+    background: none; border: none; padding: 1rem 1.6rem 0.95rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer; position: relative; transition: color 0.2s;
+  }
+  .tab-btn::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: var(--accent); transform: scaleX(0);
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); }
+  .tab-btn.active::after { transform: scaleX(1); }
+
+  /* CONTENT */
+  .tab-content { display: none; padding: 4rem 0 7rem; animation: rise 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+  .tab-content.active { display: block; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SHARED */
+  .sec-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.4rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  h2.sec-title { font-size: 1.9rem; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 0.5rem; color: var(--text); }
+  .sec-sub { color: var(--muted); font-size: 0.9rem; font-family: 'JetBrains Mono', monospace; font-weight: 300; margin-bottom: 3rem; line-height: 1.6; }
+  hr.rule { border: none; border-top: 1px solid var(--line); margin: 3.5rem 0; }
+
+  /* BIO */
+  .bio-body p { color: #a8c8b0; line-height: 1.85; font-size: 1.05rem; margin-bottom: 1.3rem; }
+  .bio-body p strong { color: var(--text); font-weight: 500; }
+  .info-table { width: 100%; border-collapse: collapse; margin-top: 3rem; }
+  .info-table tr { border-bottom: 1px solid var(--line); }
+  .info-table tr:first-child { border-top: 1px solid var(--line); }
+  .info-table td { padding: 0.85rem 0; font-size: 0.9rem; vertical-align: top; }
+  .info-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); width: 140px; padding-top: 1rem; }
+  .info-table td:last-child { color: var(--text); }
+  .info-table a { color: var(--accent); text-decoration: none; }
+
+  /* RESEARCH */
+  .r-item { display: grid; grid-template-columns: 3rem 1fr; gap: 1.5rem; padding: 2rem 0; border-bottom: 1px solid var(--line); }
+  .r-item:first-child { border-top: 1px solid var(--line); }
+  .r-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; padding-top: 0.3rem; }
+  .r-body h3 { font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; }
+  .r-body p { color: var(--muted); font-size: 0.92rem; line-height: 1.75; }
+  .r-body .keywords { margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .kw { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; color: var(--gold); opacity: 0.8; }
+  .kw + .kw::before { content: '·'; margin-right: 0.4rem; }
+
+  .tl-item { display: grid; grid-template-columns: 120px 1fr; gap: 2rem; padding: 1.8rem 0; border-bottom: 1px solid var(--line); }
+  .tl-item:first-child { border-top: 1px solid var(--line); }
+  .tl-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--accent); padding-top: 0.25rem; line-height: 1.4; }
+  .tl-body h4 { font-size: 0.97rem; font-weight: 500; color: var(--text); margin-bottom: 0.25rem; }
+  .tl-body p { color: var(--muted); font-size: 0.85rem; line-height: 1.65; font-family: 'JetBrains Mono', monospace; font-weight: 300; }
+
+  /* PUBLICATIONS */
+  .pub-filter { display: inline-flex; border: 1px solid var(--line); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
+  .flt {
+    background: none; border: none; border-right: 1px solid var(--line);
+    padding: 0.5rem 1.1rem; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .flt:last-child { border-right: none; }
+  .flt:hover { color: var(--text); background: var(--faint); }
+  .flt.active { color: var(--accent); background: var(--faint); }
+
+  .pub-stats {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--muted); margin-bottom: 2.5rem; line-height: 2; display: none;
+  }
+  .pub-stats span { color: var(--accent); }
+
+  /* Loading spinner */
+  .pub-loader {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 3rem 0; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--muted);
+  }
+  .spinner {
+    width: 16px; height: 16px; border: 1.5px solid var(--line);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .pub-error {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: #c8a07a; padding: 1.5rem; border: 1px solid rgba(200,160,122,0.2);
+    border-radius: 2px; line-height: 1.8; display: none;
+  }
+  .pub-error a { color: var(--accent); text-decoration: none; }
+
+  .pub-item { padding: 2rem 0; border-bottom: 1px solid var(--line); display: none; }
+  .pub-list > .pub-item:first-child { border-top: 1px solid var(--line); }
+  .pub-item.visible { display: block; }
+
+  .pub-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .pub-year { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--muted); }
+  .pub-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.55rem; border: 1px solid; border-radius: 1px; }
+  .pub-badge.journal    { color: var(--accent); border-color: rgba(126,200,160,0.35); }
+  .pub-badge.conference { color: var(--gold);   border-color: rgba(184,201,122,0.35); }
+  .pub-badge.preprint   { color: #a0c8b8;       border-color: rgba(160,200,184,0.35); }
+
+  .pub-item h3 { font-size: 1.05rem; font-weight: 400; font-style: italic; color: var(--text); line-height: 1.4; margin-bottom: 0.45rem; }
+  .pub-authors { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 300; color: var(--muted); margin-bottom: 0.3rem; line-height: 1.6; }
+  .pub-authors strong { color: var(--text); font-weight: 400; }
+  .pub-venue { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); margin-bottom: 0.8rem; }
+  .pub-links { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+  .pub-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+  .pub-links a:hover { opacity: 1; }
+
+  /* EXTRA CURRICULAR */
+  .ec-item { display: grid; grid-template-columns: 120px 1fr; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--line); }
+  .ec-item:first-child { border-top: 1px solid var(--line); }
+  .ec-period { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--muted); padding-top: 0.25rem; line-height: 1.6; }
+  .ec-body h3 { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 0.2rem; }
+  .ec-body .role-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; }
+  .ec-body p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 2rem 0; position: relative; z-index: 1; }
+  .footer-inner { max-width: 780px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+  footer p { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--muted); }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .tl-item, .ec-item { grid-template-columns: 1fr; gap: 0.3rem; }
+    .tab-btn { padding: 0.9rem 0.8rem; font-size: 0.6rem; }
+    header { padding: 3rem 0 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">// Postdoctoral Fellow · Theoretical Physics</p>
+    <h1>Saumyen <em>Kundu</em></h1>
+    <p class="affil">Harish-Chandra Research Institute, Prayagraj</p>
+    <div class="research-pills">
+      <span class="pill">BSM Phenomenology</span>
+      <span class="pill">Collider Physics</span>
+      <span class="pill">Dark Matter</span>
+    </div>
+    <div class="contact-row">
+      <a href="mailto:saumyen@hri.res.in">Email</a>
+      <a href="https://inspirehep.net/authors/1965059" target="_blank">INSPIRE ↗</a>
+      <a href="https://arxiv.org/search/?searchtype=author&query=Kundu+S" target="_blank">arXiv ↗</a>
+      <a href="#">CV ↓</a>
+    </div>
+  </header>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active"  onclick="switchTab('bio',this)">Bio</button>
+    <button class="tab-btn" onclick="switchTab('research',this)">Research</button>
+    <button class="tab-btn" onclick="switchTab('publications',this)">Publications</button>
+    <button class="tab-btn" onclick="switchTab('extracurricular',this)">Extra Curricular</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- BIO -->
+  <div id="bio" class="tab-content active">
+    <div class="sec-label">About</div>
+    <h2 class="sec-title">Probing the edges of the Standard Model.</h2>
+    <p class="sec-sub">Postdoctoral Fellow · Harish-Chandra Research Institute</p>
+    <div class="bio-body">
+      <p>I am a theoretical particle physicist working at the <strong>Harish-Chandra Research Institute (HRI)</strong>, Prayagraj. My research sits at the frontier of <strong>beyond Standard Model (BSM) phenomenology</strong>, with a focus on dark matter candidates and their signatures at high-energy colliders.</p>
+      <p>My work spans model-building, the study of electroweak symmetry breaking, and the design of collider search strategies — particularly at the LHC and proposed future colliders. I am interested in how novel theoretical constructs leave observable imprints that experiments can test.</p>
+      <p>Before joining HRI, I completed my doctoral training in theoretical high-energy physics. I enjoy collaborating across the theory-experiment interface and have contributed to studies connecting effective field theories, dark sector portals, and multi-lepton signatures at hadron colliders.</p>
+    </div>
+    <table class="info-table">
+      <tr><td>Position</td><td>Postdoctoral Fellow</td></tr>
+      <tr><td>Institution</td><td>Harish-Chandra Research Institute, Prayagraj, India</td></tr>
+      <tr><td>Research</td><td>BSM Phenomenology · Collider Physics · Dark Matter</td></tr>
+      <tr><td>INSPIRE</td><td><a href="https://inspirehep.net/authors/1965059" target="_blank">inspirehep.net/authors/1965059 ↗</a></td></tr>
+      <tr><td>Email</td><td>saumyen [at] hri [dot] res [dot] in</td></tr>
+    </table>
+  </div>
+
+  <!-- RESEARCH -->
+  <div id="research" class="tab-content">
+    <div class="sec-label">Research</div>
+    <h2 class="sec-title">Areas of Investigation</h2>
+    <p class="sec-sub">Theoretical high-energy physics at the collider–cosmology interface.</p>
+    <div>
+      <div class="r-item">
+        <div class="r-num">01</div>
+        <div class="r-body">
+          <h3>BSM Phenomenology</h3>
+          <p>Building and constraining models that extend the Standard Model — including extended Higgs sectors, supersymmetric frameworks, and gauge-extended scenarios. Emphasis on connecting UV-complete theories to low-energy observables and LHC signatures.</p>
+          <div class="keywords"><span class="kw">Extended Higgs Sectors</span><span class="kw">SUSY</span><span class="kw">EFT</span><span class="kw">Electroweak Symmetry Breaking</span></div>
+        </div>
+      </div>
+      <div class="r-item">
+        <div class="r-num">02</div>
+        <div class="r-body">
+          <h3>Collider Physics</h3>
+          <p>Designing and interpreting search strategies for new physics at hadron and lepton colliders. Work includes signal-background discrimination, Monte Carlo simulation, and projections for the HL-LHC and future circular colliders.</p>
+          <div class="keywords"><span class="kw">LHC</span><span class="kw">HL-LHC</span><span class="kw">Multi-lepton Signatures</span><span class="kw">MadGraph · Pythia</span></div>
+        </div>
+      </div>
+      <div class="r-item">
+        <div class="r-num">03</div>
+        <div class="r-body">
+          <h3>Dark Matter</h3>
+          <p>Studying dark sector portals and WIMP-like candidates, focusing on how relic density constraints, direct detection bounds, and collider signatures together carve out viable parameter space in BSM models.</p>
+          <div class="keywords"><span class="kw">WIMPs</span><span class="kw">Dark Sector Portals</span><span class="kw">Direct Detection</span><span class="kw">Relic Density</span></div>
+        </div>
+      </div>
+    </div>
+    <hr class="rule">
+    <div class="sec-label">Academic Timeline</div>
+    <div>
+      <div class="tl-item">
+        <div class="tl-year">2022 — Present</div>
+        <div class="tl-body">
+          <h4>Postdoctoral Fellow — Harish-Chandra Research Institute</h4>
+          <p>Research in BSM phenomenology, dark matter model-building, and collider phenomenology.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">PhD</div>
+        <div class="tl-body">
+          <h4>Doctor of Philosophy — [Your University]</h4>
+          <p>Thesis: [Title]. Advisor: Prof. [Name].</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">B.Sc. / M.Sc.</div>
+        <div class="tl-body">
+          <h4>[Undergraduate Institution]</h4>
+          <p>Physics · [Specialisation].</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLICATIONS -->
+  <div id="publications" class="tab-content">
+    <div class="sec-label">Publications</div>
+    <h2 class="sec-title">Works</h2>
+    <p class="sec-sub">Synced live from <a href="https://inspirehep.net/authors/1965059" target="_blank" style="color:var(--accent);text-decoration:none">INSPIRE-HEP ↗</a></p>
+
+    <div id="pub-stats" class="pub-stats">
+      <span id="stat-count">—</span> publications &nbsp;·&nbsp; <span id="stat-cite">—</span> total citations
+    </div>
+
+    <div class="pub-filter">
+      <button class="flt active" onclick="filterPubs('all',this)">All</button>
+      <button class="flt" onclick="filterPubs('journal',this)">Journals</button>
+      <button class="flt" onclick="filterPubs('conference',this)">Proceedings</button>
+      <button class="flt" onclick="filterPubs('preprint',this)">Preprints</button>
+    </div>
+
+    <div id="pub-loading" class="pub-loader">
+      <div class="spinner"></div>
+      <span>Fetching from INSPIRE-HEP…</span>
+    </div>
+    <div id="pub-error" class="pub-error"></div>
+    <div id="pub-list" class="pub-list"></div>
+  </div>
+
+  <!-- EXTRA CURRICULAR -->
+  <div id="extracurricular" class="tab-content">
+    <div class="sec-label">Beyond Research</div>
+    <h2 class="sec-title">Activities & Service</h2>
+    <p class="sec-sub">Teaching, outreach, and other engagements.</p>
+    <div>
+      <div class="ec-item">
+        <div class="ec-period">2022 — Present</div>
+        <div class="ec-body">
+          <h3>Physics Outreach & Science Communication</h3>
+          <p class="role-tag">Volunteer · HRI</p>
+          <p>Participate in outreach events at local schools and colleges around Prayagraj, introducing students to fundamental questions in particle physics and cosmology.</p>
+        </div>
+      </div>
+      <div class="ec-item">
+        <div class="ec-period">2022 — Present</div>
+        <div class="ec-body">
+          <h3>Graduate Student Mentoring</h3>
+          <p class="role-tag">Mentor · HRI</p>
+          <p>Informally mentoring junior PhD students in high-energy phenomenology — covering tools like MadGraph, Pythia, and Delphes, as well as guidance on literature review and research planning.</p>
+        </div>
+      </div>
+      <div class="ec-item">
+        <div class="ec-period">Ongoing</div>
+        <div class="ec-body">
+          <h3>Referee · International Journals</h3>
+          <p class="role-tag">Peer Review</p>
+          <p>Serve as referee for journals including Physical Review D and Journal of High Energy Physics (JHEP) in the areas of BSM phenomenology and dark matter.</p>
+        </div>
+      </div>
+      <div class="ec-item">
+        <div class="ec-period">Ongoing</div>
+        <div class="ec-body">
+          <h3>Interests</h3>
+          <p class="role-tag">Personal</p>
+          <p>Outside physics, I enjoy reading broadly across philosophy of science and science history. I also follow cricket closely and find long walks a good companion to thinking through hard problems.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <p>Saumyen Kundu · Harish-Chandra Research Institute</p>
+    <p>Publications synced from <a href="https://inspirehep.net/authors/1965059" target="_blank">INSPIRE-HEP ↗</a></p>
+  </div>
+</footer>
+
+<script>
+/* ── TABS ── */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'publications' && !window._pubsLoaded) loadPublications();
+}
+
+/* ── FILTER ── */
+let _filter = 'all';
+function filterPubs(type, btn) {
+  _filter = type;
+  document.querySelectorAll('.flt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.pub-item').forEach(item => {
+    item.classList.toggle('visible', type === 'all' || item.dataset.type === type);
+  });
+}
+
+/* ── HELPERS ── */
+const AUTHOR_ID = '1965059';
+
+function classify(meta) {
+  const dt  = meta.document_type || [];
+  const pub = (meta.publication_info || [])[0] || {};
+  if (dt.includes('conference paper') || dt.includes('proceedings')) return 'conference';
+  if (pub.journal_title) return 'journal';
+  return 'preprint';
+}
+
+function getYear(meta) {
+  const pub = (meta.publication_info || [])[0] || {};
+  if (pub.year) return pub.year;
+  const d = meta.preprint_date || meta.earliest_date || '';
+  return d ? d.slice(0, 4) : '';
+}
+
+function fmtAuthors(authors) {
+  if (!authors || !authors.length) return '';
+  // Truncate long author lists
+  const list = authors.length > 8
+    ? [...authors.slice(0, 6), { full_name: `+${authors.length - 6} others`, _etc: true }]
+    : authors;
+  return list.map(a => {
+    if (a._etc) return `<span style="opacity:0.5">${a.full_name}</span>`;
+    const n = a.full_name || '';
+    return /kundu/i.test(n) ? `<strong>${n}</strong>` : n;
+  }).join(', ');
+}
+
+function fmtVenue(meta) {
+  const pub = (meta.publication_info || [])[0] || {};
+  const parts = [];
+  if (pub.journal_title)  parts.push(pub.journal_title);
+  if (pub.journal_volume) parts.push(pub.journal_volume);
+  if (pub.artid || pub.page_start) parts.push(pub.artid || pub.page_start);
+  if (pub.year) parts.push(`(${pub.year})`);
+  return parts.join(' ');
+}
+
+function renderPub(meta) {
+  const type    = classify(meta);
+  const year    = getYear(meta);
+  const title   = (meta.titles || [])[0]?.title || 'Untitled';
+  const authors = fmtAuthors(meta.authors);
+  const venue   = fmtVenue(meta);
+  const arxiv   = (meta.arxiv_eprints || [])[0]?.value || '';
+  const litId   = meta.id || '';
+  const labels  = { journal: 'Journal', conference: 'Proceedings', preprint: 'Preprint' };
+
+  const links = [];
+  if (arxiv)  links.push(`<a href="https://arxiv.org/abs/${arxiv}" target="_blank">arXiv ↗</a>`);
+  if (litId)  links.push(`<a href="https://inspirehep.net/literature/${litId}" target="_blank">INSPIRE ↗</a>`);
+  const pdfUrl = (meta.documents || []).find(d => d.url && /\.pdf$/i.test(d.url))?.url;
+  if (pdfUrl) links.push(`<a href="${pdfUrl}" target="_blank">PDF ↗</a>`);
+
+  return `<div class="pub-item" data-type="${type}">
+    <div class="pub-meta">
+      <span class="pub-year">${year}</span>
+      <span class="pub-badge ${type}">${labels[type]}</span>
+    </div>
+    <h3>${title}</h3>
+    ${authors ? `<p class="pub-authors">${authors}</p>` : ''}
+    ${venue   ? `<p class="pub-venue">${venue}</p>`   : ''}
+    ${links.length ? `<div class="pub-links">${links.join('')}</div>` : ''}
+  </div>`;
+}
+
+/* ── FETCH with proxy fallback chain ── */
+async function tryFetch(url) {
+  // 1. Direct fetch first (works when page is hosted on a server)
+  try {
+    const r = await fetch(url, { mode: 'cors' });
+    if (r.ok) return r.json();
+  } catch (_) {}
+
+  // 2. corsproxy.io
+  try {
+    const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+    if (r.ok) return r.json();
+  } catch (_) {}
+
+  // 3. allorigins.win
+  try {
+    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    if (r.ok) {
+      const wrapper = await r.json();
+      return JSON.parse(wrapper.contents);
+    }
+  } catch (_) {}
+
+  throw new Error('All fetch attempts failed.');
+}
+
+async function loadPublications() {
+  window._pubsLoaded = true;
+  const elLoad  = document.getElementById('pub-loading');
+  const elErr   = document.getElementById('pub-error');
+  const elList  = document.getElementById('pub-list');
+  const elStats = document.getElementById('pub-stats');
+
+  elLoad.style.display  = 'flex';
+  elErr.style.display   = 'none';
+  elList.innerHTML      = '';
+  elStats.style.display = 'none';
+
+  const apiUrl = `https://inspirehep.net/api/literature?sort=mostrecent&size=50&page=1`
+               + `&q=a%20${AUTHOR_ID}`
+               + `&fields=titles,authors,publication_info,document_type,arxiv_eprints,documents,preprint_date,earliest_date,id,citation_count`;
+
+  try {
+    const data = await tryFetch(apiUrl);
+    const hits = data.hits?.hits || [];
+
+    elLoad.style.display = 'none';
+
+    if (!hits.length) {
+      elErr.innerHTML    = `No publications found for INSPIRE ID <strong>${AUTHOR_ID}</strong>.`
+                         + ` <a href="https://inspirehep.net/authors/${AUTHOR_ID}" target="_blank">Check directly on INSPIRE ↗</a>`;
+      elErr.style.display = 'block';
+      return;
+    }
+
+    elList.innerHTML = hits.map(h => renderPub(h.metadata)).join('');
+
+    const totalCites = hits.reduce((s, h) => s + (h.metadata.citation_count || 0), 0);
+    document.getElementById('stat-count').textContent = hits.length;
+    document.getElementById('stat-cite').textContent  = totalCites;
+    elStats.style.display = 'block';
+
+    filterPubs(_filter, document.querySelector('.flt.active'));
+
+  } catch (e) {
+    elLoad.style.display = 'none';
+    elErr.innerHTML = `
+      <strong>Could not fetch publications automatically.</strong><br>
+      This usually happens when opening the file locally (file://).<br>
+      To fix: host the page on any web server, or
+      <a href="https://inspirehep.net/authors/${AUTHOR_ID}" target="_blank">view your full list on INSPIRE ↗</a>
+    `;
+    elErr.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
