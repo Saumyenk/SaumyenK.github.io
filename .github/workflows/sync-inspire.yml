@@ -16,7 +16,7 @@ jobs:
 
       - name: Fetch from INSPIRE
         run: |
-          curl -s "https://inspirehep.net/api/literature?sort=mostrecent&size=50&page=1&q=a%201965059&fields=titles,authors,publication_info,document_type,arxiv_eprints,id,citation_count,preprint_date,earliest_date,documents" \
+          curl -s "https://inspirehep.net/api/literature?sort=mostrecent&size=50&page=1&q=a%20Saumyen.Kundu.1&fields=titles,authors,publication_info,document_type,arxiv_eprints,id,citation_count,preprint_date,earliest_date,documents" \
             -o publications.json
 
       - name: Commit and push
