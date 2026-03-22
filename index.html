@@ -155,7 +155,6 @@
   .r-body .keywords { margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .kw { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; color: var(--gold); opacity: 0.8; }
   .kw + .kw::before { content: '·'; margin-right: 0.4rem; }
-
   .tl-item { display: grid; grid-template-columns: 120px 1fr; gap: 2rem; padding: 1.8rem 0; border-bottom: 1px solid var(--line); }
   .tl-item:first-child { border-top: 1px solid var(--line); }
   .tl-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--accent); padding-top: 0.25rem; line-height: 1.4; }
@@ -174,30 +173,14 @@
   .flt:hover { color: var(--text); background: var(--faint); }
   .flt.active { color: var(--accent); background: var(--faint); }
 
-  .pub-stats {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-    color: var(--muted); margin-bottom: 2.5rem; line-height: 2; display: none;
-  }
+  .pub-stats { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-bottom: 2.5rem; line-height: 2; display: none; }
   .pub-stats span { color: var(--accent); }
 
-  /* Loading spinner */
-  .pub-loader {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 3rem 0; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; color: var(--muted);
-  }
-  .spinner {
-    width: 16px; height: 16px; border: 1.5px solid var(--line);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin 0.8s linear infinite; flex-shrink: 0;
-  }
+  .pub-loader { display: flex; align-items: center; gap: 1rem; padding: 3rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .spinner { width: 16px; height: 16px; border: 1.5px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .pub-error {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-    color: #c8a07a; padding: 1.5rem; border: 1px solid rgba(200,160,122,0.2);
-    border-radius: 2px; line-height: 1.8; display: none;
-  }
+  .pub-error { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #c8a07a; padding: 1.5rem; border: 1px solid rgba(200,160,122,0.2); border-radius: 2px; line-height: 1.8; display: none; }
   .pub-error a { color: var(--accent); text-decoration: none; }
 
   .pub-item { padding: 2rem 0; border-bottom: 1px solid var(--line); display: none; }
@@ -349,11 +332,11 @@
     </div>
   </div>
 
-  <!-- PUBLICATIONS -->
+  <!-- PUBLICATIONS — reads from local publications.json (populated by GitHub Actions) -->
   <div id="publications" class="tab-content">
     <div class="sec-label">Publications</div>
     <h2 class="sec-title">Works</h2>
-    <p class="sec-sub">Synced live from <a href="https://inspirehep.net/authors/1965059" target="_blank" style="color:var(--accent);text-decoration:none">INSPIRE-HEP ↗</a></p>
+    <p class="sec-sub">Synced daily from <a href="https://inspirehep.net/authors/1965059" target="_blank" style="color:var(--accent);text-decoration:none">INSPIRE-HEP ↗</a></p>
 
     <div id="pub-stats" class="pub-stats">
       <span id="stat-count">—</span> publications &nbsp;·&nbsp; <span id="stat-cite">—</span> total citations
@@ -368,7 +351,7 @@
 
     <div id="pub-loading" class="pub-loader">
       <div class="spinner"></div>
-      <span>Fetching from INSPIRE-HEP…</span>
+      <span>Loading publications…</span>
     </div>
     <div id="pub-error" class="pub-error"></div>
     <div id="pub-list" class="pub-list"></div>
@@ -446,8 +429,6 @@ function filterPubs(type, btn) {
 }
 
 /* ── HELPERS ── */
-const AUTHOR_ID = '1965059';
-
 function classify(meta) {
   const dt  = meta.document_type || [];
   const pub = (meta.publication_info || [])[0] || {};
@@ -465,7 +446,6 @@ function getYear(meta) {
 
 function fmtAuthors(authors) {
   if (!authors || !authors.length) return '';
-  // Truncate long author lists
   const list = authors.length > 8
     ? [...authors.slice(0, 6), { full_name: `+${authors.length - 6} others`, _etc: true }]
     : authors;
@@ -514,32 +494,7 @@ function renderPub(meta) {
   </div>`;
 }
 
-/* ── FETCH with proxy fallback chain ── */
-async function tryFetch(url) {
-  // 1. Direct fetch first (works when page is hosted on a server)
-  try {
-    const r = await fetch(url, { mode: 'cors' });
-    if (r.ok) return r.json();
-  } catch (_) {}
-
-  // 2. corsproxy.io
-  try {
-    const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-    if (r.ok) return r.json();
-  } catch (_) {}
-
-  // 3. allorigins.win
-  try {
-    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-    if (r.ok) {
-      const wrapper = await r.json();
-      return JSON.parse(wrapper.contents);
-    }
-  } catch (_) {}
-
-  throw new Error('All fetch attempts failed.');
-}
-
+/* ── LOAD from local publications.json (written by GitHub Actions) ── */
 async function loadPublications() {
   window._pubsLoaded = true;
   const elLoad  = document.getElementById('pub-loading');
@@ -552,19 +507,18 @@ async function loadPublications() {
   elList.innerHTML      = '';
   elStats.style.display = 'none';
 
-  const apiUrl = `https://inspirehep.net/api/literature?sort=mostrecent&size=50&page=1`
-               + `&q=a%20${AUTHOR_ID}`
-               + `&fields=titles,authors,publication_info,document_type,arxiv_eprints,documents,preprint_date,earliest_date,id,citation_count`;
-
   try {
-    const data = await tryFetch(apiUrl);
+    // Reads the local publications.json file — no CORS issues
+    const res = await fetch('./publications.json');
+    if (!res.ok) throw new Error(`Could not load publications.json (HTTP ${res.status})`);
+    const data = await res.json();
     const hits = data.hits?.hits || [];
 
     elLoad.style.display = 'none';
 
     if (!hits.length) {
-      elErr.innerHTML    = `No publications found for INSPIRE ID <strong>${AUTHOR_ID}</strong>.`
-                         + ` <a href="https://inspirehep.net/authors/${AUTHOR_ID}" target="_blank">Check directly on INSPIRE ↗</a>`;
+      elErr.innerHTML     = `No publications found. The GitHub Actions sync may not have run yet.`
+                          + ` <a href="https://inspirehep.net/authors/1965059" target="_blank">View on INSPIRE ↗</a>`;
       elErr.style.display = 'block';
       return;
     }
@@ -580,12 +534,9 @@ async function loadPublications() {
 
   } catch (e) {
     elLoad.style.display = 'none';
-    elErr.innerHTML = `
-      <strong>Could not fetch publications automatically.</strong><br>
-      This usually happens when opening the file locally (file://).<br>
-      To fix: host the page on any web server, or
-      <a href="https://inspirehep.net/authors/${AUTHOR_ID}" target="_blank">view your full list on INSPIRE ↗</a>
-    `;
+    elErr.innerHTML = `<strong>Publications could not be loaded.</strong><br>
+      Make sure the GitHub Actions workflow has run at least once to generate <code>publications.json</code>.<br>
+      <a href="https://inspirehep.net/authors/1965059" target="_blank">View full list on INSPIRE ↗</a>`;
     elErr.style.display = 'block';
   }
 }
