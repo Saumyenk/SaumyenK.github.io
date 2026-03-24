@@ -239,7 +239,7 @@
       <a href="mailto:saumyenkundu@hri.res.in">Email</a>
       <a href="https://inspirehep.net/authors/1965059" target="_blank">INSPIRE ↗</a>
       <a href="https://arxiv.org/search/?searchtype=author&query=Kundu+Saumyen" target="_blank">arXiv ↗</a>
-      <a href="cv.pdf">CV ↓</a>
+      <a href="#" onclick="openCV(); return false;">CV ↓</a>
     </div>
   </header>
 </div>
@@ -401,6 +401,22 @@
 
 </div>
 
+
+<!-- CV MODAL -->
+<div id="cv-modal" class="cv-modal">
+  <div class="cv-box">
+    <div class="cv-header">
+      <span class="cv-header-label">Curriculum Vitae</span>
+      <div class="cv-header-actions">
+        <a href="cv.pdf" download="Saumyen_Kundu_CV.pdf" class="cv-dl">Download ↓</a>
+        <a href="cv.pdf" target="_blank" class="cv-ext">Open ↗</a>
+        <button class="cv-close" onclick="closeCV()">Close ✕</button>
+      </div>
+    </div>
+    <iframe src="cv.pdf" class="cv-frame" title="Saumyen Kundu CV"></iframe>
+  </div>
+</div>
+
 <footer>
   <div class="footer-inner">
     <p>Saumyen Kundu · Harish-Chandra Research Institute</p>
@@ -410,6 +426,22 @@
 
   
 <script>
+/* ── CV MODAL ── */
+function openCV() {
+  document.getElementById('cv-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCV() {
+  document.getElementById('cv-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('cv-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeCV();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCV();
+});
+ 
 /* ── TABS ── */
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
